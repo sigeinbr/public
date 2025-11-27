@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Download do App - Patrimônio RFID</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            color: #222;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        header {
+            background: #0a6cff;
+            color: white;
+            width: 100%;
+            padding: 25px 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+            box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .container {
+            margin-top: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn-download {
+            display: block;
+            background: #0a6cff;
+            color: white;
+            padding: 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 25px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            transition: 0.2s;
+        }
+
+        .btn-download:hover {
+            background: #0959d1;
+        }
+
+        #version {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: #444;
+        }
+
+        #qr {
+            margin-top: 25px;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.8rem;
+            color: #666;
+            padding-bottom: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        App Patrimônio RFID – Download
+    </header>
+
+    <div class="container">
+        <p>Baixe abaixo a versão mais recente do aplicativo:</p>
+
+        <a class="btn-download" href="app-debug.apk" download>
+            📥 Baixar APK (Android)
+        </a>
+
+        <div id="version">Carregando versão...</div>
+
+        <canvas id="qr"></canvas>
+    </div>
+
+    <footer>
+        &copy; <span id="year"></span> – sigeinbr<br/>
+        APK gerado automaticamente via GitHub Actions
+    </footer>
+
+    <script>
+        // Atualiza ano no rodapé
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        // Carrega versão do arquivo version.txt
+        fetch("version.txt")
+            .then(res => res.text())
+            .then(version => {
+                document.getElementById("version").innerText = "Versão: " + version.trim();
+            })
+            .catch(() => {
+                document.getElementById("version").innerText = "Versão: não encontrada";
+            });
+
+        // --- Gerar QR Code simples (sem libs externas) ---
+        function drawQR(text) {
+            const canvas = document.getElementById("qr");
+            const qrApi = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(text);
+            const img = new Image();
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+            };
+            img.src = qrApi;
+        }
+
+        // Aplicar QR Code para download direto
+        drawQR(window.location.href + "app-debug.apk");
+    </script>
+</body>
+</html>
